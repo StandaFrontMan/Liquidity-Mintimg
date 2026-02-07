@@ -15,9 +15,33 @@ contract LiquidityStaking {
     mapping(address => Stake) public stakes;
     uint256 public rewardPerSecondPerETH = 1;
 
+    event Staked(address indexed stakerAddress, uint256 amount, uint256 stakeTime);
+
     constructor(address _rewardToken) {
         rewardToken = IERC20(_rewardToken);
     }
+
+
+
+
+
+    function stake() public payable {
+        require(msg.value > 0, "Cant stake 0 ETH");
+
+        Stake storage userStake = stakes[msg.sender];
+
+        if (userStake.amount > 0) {
+            uint256 pending = calcReward(msg.sender);
+            userStake.claimed += pending;
+        }
+
+        userStake.amount += msg.value;
+        userStake.startTime = block.timestamp;
+
+        emit Staked(msg.sender, msg.value, block.timestamp);
+    }
+
+
 
 
 
