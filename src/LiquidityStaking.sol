@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import { ReentrancyGuard } from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 
-contract LiquidityStaking {
+contract LiquidityStaking is ReentrancyGuard {
     IERC20 public rewardToken;
 
     struct Stake {
@@ -13,9 +14,10 @@ contract LiquidityStaking {
     }
 
     mapping(address => Stake) public stakes;
-    uint256 public rewardPerSecondPerETH = 1;
+    uint256 public rewardPerSecondPerEth = 1;
 
     event Staked(address indexed stakerAddress, uint256 amount, uint256 stakeTime);
+    event Claimed(address indexed claimedAddress, uint256 amount, uint256 claimedTime);
 
     constructor(address _rewardToken) {
         rewardToken = IERC20(_rewardToken);
@@ -45,6 +47,26 @@ contract LiquidityStaking {
 
 
 
+    function claimRewards() public nonReentrant{
+        uint256 reward = calcReward(msg.sender);
+        require(reward > 0, "No rewards to claim");
+
+        Stake storage userStake = stakes[msg.sender];
+        userStake.claimed += reward;
+        userStake.startTime = block.timestamp;
+
+        require(
+            rewardToken.transfer(msg.sender, reward),
+            "Claim error"
+        );
+
+        emit Claimed(msg.sender, reward, block.timestamp);
+    }
+
+
+
+
+
     function calcReward(address user) public view returns(uint256) {
         Stake storage userStake = stakes[user];
 
@@ -53,7 +75,7 @@ contract LiquidityStaking {
         }
 
         uint256 stakeTime = block.timestamp - userStake.startTime;
-        uint256 reward = (userStake.amount * stakeTime * rewardPerSecondPerETH) / 1 ether;
+        uint256 reward = (userStake.amount * stakeTime * rewardPerSecondPerEth) / 1 ether;
 
         return reward;
     }
