@@ -47,6 +47,32 @@ contract LiquidityStaking is ReentrancyGuard {
 
 
 
+    function unstake() public nonReentrant {
+        Stake storage userStake = stakes[msg.sender];
+
+        require(userStake.amount > 0, "Nothing to unstake");
+
+        uint256 reward = calcReward(msg.sender);
+        uint256 ethAmount = userStake.amount;
+        userStake.amount = 0;
+        userStake.claimed = 0;
+        userStake.startTime = 0;
+
+        if (reward > 0) {
+            require(
+                rewardToken.transfer(msg.sender, reward),
+                "Transaction error"
+            );
+        }
+
+        (bool success, )= msg.sender.call{value: ethAmount}("");
+        require(success, "Transaction failed");
+    }
+
+
+
+
+
     function claimRewards() public nonReentrant{
         uint256 reward = calcReward(msg.sender);
         require(reward > 0, "No rewards to claim");
