@@ -4,6 +4,11 @@ pragma solidity ^0.8.30;
 import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import { ReentrancyGuard } from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 
+error ZeroAmount();
+error NoStakeFound();
+error NoRewardsToClaim();
+error TransferFailed();
+
 contract LiquidityStaking is ReentrancyGuard {
     IERC20 public rewardToken;
 
@@ -29,7 +34,7 @@ contract LiquidityStaking is ReentrancyGuard {
 
 
     function stake() public payable {
-        require(msg.value > 0, "Cant stake 0 ETH");
+        require(msg.value > 0, ZeroAmount());
 
         Stake storage userStake = stakes[msg.sender];
 
@@ -51,7 +56,7 @@ contract LiquidityStaking is ReentrancyGuard {
     function unstake() public nonReentrant {
         Stake storage userStake = stakes[msg.sender];
 
-        require(userStake.amount > 0, "Nothing to unstake");
+        require(userStake.amount > 0, NoStakeFound());
 
         uint256 reward = calcReward(msg.sender);
         uint256 ethAmount = userStake.amount;
@@ -62,12 +67,12 @@ contract LiquidityStaking is ReentrancyGuard {
         if (reward > 0) {
             require(
                 rewardToken.transfer(msg.sender, reward),
-                "Transaction error"
+                TransferFailed()
             );
         }
 
         (bool success, )= msg.sender.call{value: ethAmount}("");
-        require(success, "Transaction failed");
+        require(success, TransferFailed());
 
         emit Unstaked(msg.sender, ethAmount, reward, block.timestamp);
     }
@@ -78,7 +83,7 @@ contract LiquidityStaking is ReentrancyGuard {
 
     function claimRewards() public nonReentrant{
         uint256 reward = calcReward(msg.sender);
-        require(reward > 0, "No rewards to claim");
+        require(reward > 0, NoRewardsToClaim());
 
         Stake storage userStake = stakes[msg.sender];
         userStake.claimed += reward;
@@ -86,7 +91,7 @@ contract LiquidityStaking is ReentrancyGuard {
 
         require(
             rewardToken.transfer(msg.sender, reward),
-            "Claim error"
+            TransferFailed()
         );
 
         emit Claimed(msg.sender, reward, block.timestamp);
