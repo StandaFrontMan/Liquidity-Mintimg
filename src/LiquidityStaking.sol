@@ -4,10 +4,6 @@ pragma solidity ^0.8.30;
 import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import { ReentrancyGuard } from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 
-error ZeroAmount();
-error NoStakeFound();
-error NoRewardsToClaim();
-error TransferFailed();
 
 contract LiquidityStaking is ReentrancyGuard {
     IERC20 public rewardToken;
@@ -25,11 +21,17 @@ contract LiquidityStaking is ReentrancyGuard {
     event Claimed(address indexed claimedAddress, uint256 amount, uint256 claimedTime);
     event Unstaked(address indexed unstakedAddress, uint256 ethAmount, uint256 rewardAmount, uint256 unstakeTime);
 
+    error ZeroAmount();
+    error NoStakeFound();
+    error NoRewardsToClaim();
+    error TransferFailed();
+
     constructor(address _rewardToken) {
+        require(_rewardToken != address(0), ZeroAmount());
         rewardToken = IERC20(_rewardToken);
     }
 
-
+    
 
 
 
@@ -122,6 +124,8 @@ contract LiquidityStaking is ReentrancyGuard {
 
 
 
+
+
     function getMyStake() public view returns (uint256 amount, uint256 startTime, uint256 pendingReward) {
         Stake memory userStake = stakes[msg.sender];
         return (
@@ -131,4 +135,15 @@ contract LiquidityStaking is ReentrancyGuard {
         );
     }
 
+
+
+
+
+    receive() external payable {
+        stake();
+    }
+
+    fallback() external payable {
+        stake();
+    }
 }
