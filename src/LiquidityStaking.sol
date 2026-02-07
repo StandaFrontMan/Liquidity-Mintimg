@@ -18,6 +18,7 @@ contract LiquidityStaking is ReentrancyGuard {
 
     event Staked(address indexed stakerAddress, uint256 amount, uint256 stakeTime);
     event Claimed(address indexed claimedAddress, uint256 amount, uint256 claimedTime);
+    event Unstaked(address indexed unstakedAddress, uint256 ethAmount, uint256 rewardAmount, uint256 unstakeTime);
 
     constructor(address _rewardToken) {
         rewardToken = IERC20(_rewardToken);
@@ -67,6 +68,8 @@ contract LiquidityStaking is ReentrancyGuard {
 
         (bool success, )= msg.sender.call{value: ethAmount}("");
         require(success, "Transaction failed");
+
+        emit Unstaked(msg.sender, ethAmount, reward, block.timestamp);
     }
 
 
