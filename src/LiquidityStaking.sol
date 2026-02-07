@@ -105,4 +105,22 @@ contract LiquidityStaking is ReentrancyGuard {
 
         return reward;
     }
+
+
+
+    function getMyPendingRewards() public view returns (uint256) {
+        return calcReward(msg.sender);
+    }
+
+
+
+    function getMyStake() public view returns (uint256 amount, uint256 startTime, uint256 pendingReward) {
+        Stake memory userStake = stakes[msg.sender];
+        return (
+            userStake.amount,
+            userStake.startTime,
+            calcReward(msg.sender)
+        );
+    }
+
 }
