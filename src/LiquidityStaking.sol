@@ -4,7 +4,6 @@ pragma solidity ^0.8.30;
 import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import { ReentrancyGuard } from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 
-
 contract LiquidityStaking is ReentrancyGuard {
     IERC20 public rewardToken;
 
@@ -19,7 +18,7 @@ contract LiquidityStaking is ReentrancyGuard {
 
     uint256 public totalStaked;
     uint256 public baseRewardRatePerYear = 20;
-    uint256 public targetTVL = 100 ether;          
+    uint256 public targetTvl = 100 ether;          
     uint256 public minRewardRate = 5;              
     uint256 public maxRewardRate = 100;
 
@@ -127,7 +126,7 @@ contract LiquidityStaking is ReentrancyGuard {
             return maxRewardRate;
         }
 
-        uint256 calculatedAPY = (baseRewardRatePerYear * targetTVL * PRECISION) / (totalStaked * PRECISION);
+        uint256 calculatedAPY = (baseRewardRatePerYear * targetTvl * PRECISION) / (totalStaked * PRECISION);
 
         if (calculatedAPY < minRewardRate) {
             return minRewardRate;
