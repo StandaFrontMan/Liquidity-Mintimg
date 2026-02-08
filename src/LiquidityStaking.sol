@@ -175,6 +175,30 @@ contract LiquidityStaking is ReentrancyGuard {
 
 
 
+    /**
+     * @notice returns all pool metrics
+     * @return currentTVL 
+     * @return currentAPY 
+     * @return rewardRate 
+     * @return contractBalance 
+     */
+    function getPoolInfo() public view returns(
+        uint256 currentTVL,
+        uint256 currentAPY,
+        uint256 rewardRate,
+        uint256 contractBalance
+    ) {
+        return (
+            totalStaked,
+            getCurrentAPY(),
+            getRewardPerSecondPerETH(),
+            rewardToken.balanceOf(address(this))
+        );
+    }
+
+
+
+
 
     function getMyPendingRewards() public view returns (uint256) {
         return calcReward(msg.sender);
