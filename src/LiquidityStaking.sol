@@ -17,9 +17,19 @@ contract LiquidityStaking is ReentrancyGuard {
     mapping(address => Stake) public stakes;
     uint256 public rewardPerSecondPerEth = 1;
 
+    uint256 public totalStaked;
+    uint256 public baseRewardRatePerYear = 20;
+    uint256 public targetTVL = 100 ether;          
+    uint256 public minRewardRate = 5;              
+    uint256 public maxRewardRate = 100;
+
+    uint256 private constant PRECISION = 1e18;
+    uint256 private constant SECONDS_PER_YEAR = 365 days;
+
     event Staked(address indexed stakerAddress, uint256 amount, uint256 stakeTime);
     event Claimed(address indexed claimedAddress, uint256 amount, uint256 claimedTime);
     event Unstaked(address indexed unstakedAddress, uint256 ethAmount, uint256 rewardAmount, uint256 unstakeTime);
+    event APYUpdated(uint256 curApy, uint256 totalStaked, uint256 timeStamp);
 
     error ZeroAmount();
     error NoStakeFound();
@@ -48,7 +58,10 @@ contract LiquidityStaking is ReentrancyGuard {
         userStake.amount += msg.value;
         userStake.startTime = block.timestamp;
 
+        totalStaked += msg.value;
+
         emit Staked(msg.sender, msg.value, block.timestamp);
+        emit APYUpdated(getCurrentAPY(), totalStaked, block.timestamp);
     }
 
 
@@ -57,14 +70,15 @@ contract LiquidityStaking is ReentrancyGuard {
 
     function unstake() public nonReentrant {
         Stake storage userStake = stakes[msg.sender];
-
         require(userStake.amount > 0, NoStakeFound());
 
         uint256 reward = calcReward(msg.sender);
         uint256 ethAmount = userStake.amount;
+
         userStake.amount = 0;
         userStake.claimed = 0;
         userStake.startTime = 0;
+        totalStaked -= ethAmount;
 
         if (reward > 0) {
             require(
@@ -77,6 +91,7 @@ contract LiquidityStaking is ReentrancyGuard {
         require(success, TransferFailed());
 
         emit Unstaked(msg.sender, ethAmount, reward, block.timestamp);
+        emit APYUpdated(getCurrentAPY(), totalStaked, block.timestamp);
     }
 
 
@@ -102,6 +117,45 @@ contract LiquidityStaking is ReentrancyGuard {
 
 
 
+    /**
+     * @notice calcs current APY by TVL
+     * @dev APY = baseRate * (targetTVL / currentTVL)
+     * @return Curr APY in % !!!
+     */
+    function getCurrentAPY() public view returns(uint256) {
+        if (totalStaked == 0) {
+            return maxRewardRate;
+        }
+
+        uint256 calculatedAPY = (baseRewardRatePerYear * targetTVL * PRECISION) / (totalStaked * PRECISION);
+
+        if (calculatedAPY < minRewardRate) {
+            return minRewardRate;
+        }
+
+        if (calculatedAPY > maxRewardRate) {
+            return maxRewardRate;
+        }
+
+        return calculatedAPY;
+    }
+
+
+
+
+    /**
+     * @notice calc reward per second by curr APY
+     * @dev converts APY in reward per second per ETH
+     * @return Reward per second per ETH (с учетом 18 decimals)
+     */
+    function getRewardPerSecondPerETH() public view returns(uint256) {
+        uint256 currentAPY = getCurrentAPY();
+        return (PRECISION * currentAPY) / (100 * SECONDS_PER_YEAR);
+    }
+
+
+
+
 
     function calcReward(address user) public view returns(uint256) {
         Stake storage userStake = stakes[user];
@@ -111,10 +165,14 @@ contract LiquidityStaking is ReentrancyGuard {
         }
 
         uint256 stakeTime = block.timestamp - userStake.startTime;
-        uint256 reward = (userStake.amount * stakeTime * rewardPerSecondPerEth) / 1 ether;
+        uint256 rewardRate = getRewardPerSecondPerETH();
+
+        uint256 reward = (userStake.amount * stakeTime * rewardRate) / PRECISION;
 
         return reward;
     }
+
+
 
 
 
