@@ -3,8 +3,9 @@ pragma solidity ^0.8.30;
 
 import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import { ReentrancyGuard } from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
+import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
 
-contract LiquidityStaking is ReentrancyGuard {
+contract LiquidityStaking is ReentrancyGuard, Ownable {
     IERC20 public rewardToken;
 
     struct Stake {
@@ -34,8 +35,10 @@ contract LiquidityStaking is ReentrancyGuard {
     error NoStakeFound();
     error NoRewardsToClaim();
     error TransferFailed();
+    error InvalidRewardRate();
+    error InvalidLimits();
 
-    constructor(address _rewardToken) {
+    constructor(address _rewardToken) Ownable(msg.sender) {
         require(_rewardToken != address(0), ZeroAmount());
         rewardToken = IERC20(_rewardToken);
     }
@@ -227,4 +230,39 @@ contract LiquidityStaking is ReentrancyGuard {
     fallback() external payable {
         stake();
     }
+
+
+
+
+
+    function setTargetTvl(uint256 _targetTvl) external onlyOwner {
+        require(_targetTvl > 0, ZeroAmount());
+        targetTvl = _targetTvl;
+        emit APYUpdated(getCurrentAPY(), totalStaked, block.timestamp);
+    }
+
+
+
+
+
+    function setBaseRewardRate(uint256 _baseRate) external onlyOwner {
+        require(_baseRate > 0 && _baseRate <= 1000, InvalidRewardRate());
+        baseRewardRatePerYear = _baseRate;
+        emit APYUpdated(getCurrentAPY(), totalStaked, block.timestamp);        
+    }
+
+
+
+
+
+    function setRateLimits(
+        uint256 _minRate,
+        uint256 _maxRate
+    ) external onlyOwner {
+        require(_minRate > 0 && _minRate < _maxRate, InvalidLimits());
+        minRewardRate = _minRate;
+        maxRewardRate = _maxRate;
+        emit APYUpdated(getCurrentAPY(), totalStaked, block.timestamp);
+    }
+
 }
