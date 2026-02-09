@@ -145,6 +145,23 @@ contract LiquidityStaking is ReentrancyGuard, Ownable {
 
 
 
+
+    function previewApy(uint256 hypotheticalTVL) external view returns(uint256) {
+        if (hypotheticalTVL == 0) {
+            return maxRewardRate;
+        }
+
+        uint256 calculatedAPY = (baseRewardRatePerYear * targetTvl) / hypotheticalTVL;
+
+        if (calculatedAPY < minRewardRate) return minRewardRate;
+        if (calculatedAPY > maxRewardRate) return maxRewardRate;
+    
+        return calculatedAPY;
+    }
+
+
+
+
     /**
      * @notice calc reward per second by curr APY
      * @dev converts APY in reward per second per ETH
