@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import { ReentrancyGuard } from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
-
+import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import {ReentrancyGuard} from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 
 contract LiquidityStaking is ReentrancyGuard {
     IERC20 public rewardToken;
@@ -31,10 +30,6 @@ contract LiquidityStaking is ReentrancyGuard {
         rewardToken = IERC20(_rewardToken);
     }
 
-    
-
-
-
     function stake() public payable {
         require(msg.value > 0, ZeroAmount());
 
@@ -51,10 +46,6 @@ contract LiquidityStaking is ReentrancyGuard {
         emit Staked(msg.sender, msg.value, block.timestamp);
     }
 
-
-
-
-
     function unstake() public nonReentrant {
         Stake storage userStake = stakes[msg.sender];
 
@@ -67,23 +58,16 @@ contract LiquidityStaking is ReentrancyGuard {
         userStake.startTime = 0;
 
         if (reward > 0) {
-            require(
-                rewardToken.transfer(msg.sender, reward),
-                TransferFailed()
-            );
+            require(rewardToken.transfer(msg.sender, reward), TransferFailed());
         }
 
-        (bool success, )= msg.sender.call{value: ethAmount}("");
+        (bool success,) = msg.sender.call{value: ethAmount}("");
         require(success, TransferFailed());
 
         emit Unstaked(msg.sender, ethAmount, reward, block.timestamp);
     }
 
-
-
-
-
-    function claimRewards() public nonReentrant{
+    function claimRewards() public nonReentrant {
         uint256 reward = calcReward(msg.sender);
         require(reward > 0, NoRewardsToClaim());
 
@@ -91,19 +75,12 @@ contract LiquidityStaking is ReentrancyGuard {
         userStake.claimed += reward;
         userStake.startTime = block.timestamp;
 
-        require(
-            rewardToken.transfer(msg.sender, reward),
-            TransferFailed()
-        );
+        require(rewardToken.transfer(msg.sender, reward), TransferFailed());
 
         emit Claimed(msg.sender, reward, block.timestamp);
     }
 
-
-
-
-
-    function calcReward(address user) public view returns(uint256) {
+    function calcReward(address user) public view returns (uint256) {
         Stake storage userStake = stakes[user];
 
         if (userStake.amount == 0) {
@@ -116,28 +93,14 @@ contract LiquidityStaking is ReentrancyGuard {
         return reward;
     }
 
-
-
     function getMyPendingRewards() public view returns (uint256) {
         return calcReward(msg.sender);
     }
 
-
-
-
-
     function getMyStake() public view returns (uint256 amount, uint256 startTime, uint256 pendingReward) {
         Stake memory userStake = stakes[msg.sender];
-        return (
-            userStake.amount,
-            userStake.startTime,
-            calcReward(msg.sender)
-        );
+        return (userStake.amount, userStake.startTime, calcReward(msg.sender));
     }
-
-
-
-
 
     receive() external payable {
         stake();
