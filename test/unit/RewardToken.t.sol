@@ -1,9 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
+<<<<<<< HEAD
 import {Test} from "forge-std/Test.sol";
 import {LiquidityStaking} from "../../src/LiquidityStaking.sol";
 import {RewardToken} from "../../src/RewardToken.sol";
+=======
+import { Test } from 'forge-std/Test.sol';
+import { RewardToken } from '../../src/RewardToken.sol';
+>>>>>>> feature/client_web3_connection
 
 contract RewardTokenUnitTest is Test {
     RewardToken public token;
