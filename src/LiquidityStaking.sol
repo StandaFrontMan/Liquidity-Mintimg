@@ -6,7 +6,7 @@ import { ReentrancyGuard } from "openzeppelin-contracts/contracts/utils/Reentran
 import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
 
 contract LiquidityStaking is ReentrancyGuard, Ownable {
-    IERC20 public rewardToken;
+    IERC20 public immutable rewardToken;
 
     struct Stake {
         uint256 amount;
@@ -129,7 +129,8 @@ contract LiquidityStaking is ReentrancyGuard, Ownable {
             return maxRewardRate;
         }
 
-        uint256 calculatedAPY = (baseRewardRatePerYear * targetTvl * PRECISION) / (totalStaked * PRECISION);
+        uint256 calculatedAPY = (baseRewardRatePerYear * targetTvl) / totalStaked;
+
 
         if (calculatedAPY < minRewardRate) {
             return minRewardRate;
