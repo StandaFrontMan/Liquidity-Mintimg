@@ -18,9 +18,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import { Script, console } from "forge-std/Script.sol";
-import { RewardToken } from "../src/RewardToken.sol";
-import { LiquidityStaking } from "../src/LiquidityStaking.sol";
+import {Script, console} from "forge-std/Script.sol";
+import {RewardToken} from "../src/RewardToken.sol";
+import {LiquidityStaking} from "../src/LiquidityStaking.sol";
 
 contract Deploy is Script {
     uint256 constant REWARD_SUPPLY = 1_000_000 * 10 ** 18;
@@ -42,13 +42,13 @@ contract Deploy is Script {
 
         // Проверяем
         uint256 balance = token.balanceOf(address(staking));
-        console.log("Staking balance:", balance / 10**18, "REW");
+        console.log("Staking balance:", balance / 10 ** 18, "REW");
 
         (uint256 tvl, uint256 apy, uint256 rate, uint256 contractBalance) = staking.getPoolInfo();
         console.log("\n=== Pool Info ===");
         console.log("TVL:     ", tvl);
         console.log("APY:     ", apy, "%");
         console.log("Rate:    ", rate);
-        console.log("Balance: ", contractBalance / 10**18, "REW");
+        console.log("Balance: ", contractBalance / 10 ** 18, "REW");
     }
 }

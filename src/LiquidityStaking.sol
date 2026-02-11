@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import { ReentrancyGuard } from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
-import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
+import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import {ReentrancyGuard} from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
+import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
 
 contract LiquidityStaking is ReentrancyGuard, Ownable {
     IERC20 public immutable rewardToken;
@@ -19,8 +19,8 @@ contract LiquidityStaking is ReentrancyGuard, Ownable {
 
     uint256 public totalStaked;
     uint256 public baseRewardRatePerYear = 20;
-    uint256 public targetTvl = 100 ether;          
-    uint256 public minRewardRate = 5;              
+    uint256 public targetTvl = 100 ether;
+    uint256 public minRewardRate = 5;
     uint256 public maxRewardRate = 100;
 
     uint256 private constant PRECISION = 1e18;
@@ -43,10 +43,6 @@ contract LiquidityStaking is ReentrancyGuard, Ownable {
         rewardToken = IERC20(_rewardToken);
     }
 
-    
-
-
-
     function stake() public payable {
         require(msg.value > 0, ZeroAmount());
 
@@ -66,10 +62,6 @@ contract LiquidityStaking is ReentrancyGuard, Ownable {
         emit APYUpdated(getCurrentAPY(), totalStaked, block.timestamp);
     }
 
-
-
-
-
     function unstake() public nonReentrant {
         Stake storage userStake = stakes[msg.sender];
         require(userStake.amount > 0, NoStakeFound());
@@ -83,24 +75,17 @@ contract LiquidityStaking is ReentrancyGuard, Ownable {
         totalStaked -= ethAmount;
 
         if (reward > 0) {
-            require(
-                rewardToken.transfer(msg.sender, reward),
-                TransferFailed()
-            );
+            require(rewardToken.transfer(msg.sender, reward), TransferFailed());
         }
 
-        (bool success, )= msg.sender.call{value: ethAmount}("");
+        (bool success,) = msg.sender.call{value: ethAmount}("");
         require(success, TransferFailed());
 
         emit Unstaked(msg.sender, ethAmount, reward, block.timestamp);
         emit APYUpdated(getCurrentAPY(), totalStaked, block.timestamp);
     }
 
-
-
-
-
-    function claimRewards() public nonReentrant{
+    function claimRewards() public nonReentrant {
         uint256 reward = calcReward(msg.sender);
         require(reward > 0, NoRewardsToClaim());
 
@@ -108,29 +93,22 @@ contract LiquidityStaking is ReentrancyGuard, Ownable {
         userStake.claimed += reward;
         userStake.startTime = block.timestamp;
 
-        require(
-            rewardToken.transfer(msg.sender, reward),
-            TransferFailed()
-        );
+        require(rewardToken.transfer(msg.sender, reward), TransferFailed());
 
         emit Claimed(msg.sender, reward, block.timestamp);
     }
-
-
-
 
     /**
      * @notice calcs current APY by TVL
      * @dev APY = baseRate * (targetTVL / currentTVL)
      * @return Curr APY in % !!!
      */
-    function getCurrentAPY() public view returns(uint256) {
+    function getCurrentAPY() public view returns (uint256) {
         if (totalStaked == 0) {
             return maxRewardRate;
         }
 
         uint256 calculatedAPY = (baseRewardRatePerYear * targetTvl) / totalStaked;
-
 
         if (calculatedAPY < minRewardRate) {
             return minRewardRate;
@@ -143,11 +121,7 @@ contract LiquidityStaking is ReentrancyGuard, Ownable {
         return calculatedAPY;
     }
 
-
-
-
-
-    function previewApy(uint256 hypotheticalTVL) external view returns(uint256) {
+    function previewApy(uint256 hypotheticalTVL) external view returns (uint256) {
         if (hypotheticalTVL == 0) {
             return maxRewardRate;
         }
@@ -156,28 +130,21 @@ contract LiquidityStaking is ReentrancyGuard, Ownable {
 
         if (calculatedAPY < minRewardRate) return minRewardRate;
         if (calculatedAPY > maxRewardRate) return maxRewardRate;
-    
+
         return calculatedAPY;
     }
-
-
-
 
     /**
      * @notice calc reward per second by curr APY
      * @dev converts APY in reward per second per ETH
      * @return Reward per second per ETH (с учетом 18 decimals)
      */
-    function getRewardPerSecondPerETH() public view returns(uint256) {
+    function getRewardPerSecondPerETH() public view returns (uint256) {
         uint256 currentAPY = getCurrentAPY();
         return (PRECISION * currentAPY) / (100 * SECONDS_PER_YEAR);
     }
 
-
-
-
-
-    function calcReward(address user) public view returns(uint256) {
+    function calcReward(address user) public view returns (uint256) {
         Stake storage userStake = stakes[user];
 
         if (userStake.amount == 0) {
@@ -192,54 +159,29 @@ contract LiquidityStaking is ReentrancyGuard, Ownable {
         return reward;
     }
 
-
-
-
     /**
      * @notice returns all pool metrics
-     * @return currentTVL 
-     * @return currentAPY 
-     * @return rewardRate 
-     * @return contractBalance 
+     * @return currentTVL
+     * @return currentAPY
+     * @return rewardRate
+     * @return contractBalance
      */
-    function getPoolInfo() public view returns(
-        uint256 currentTVL,
-        uint256 currentAPY,
-        uint256 rewardRate,
-        uint256 contractBalance
-    ) {
-        return (
-            totalStaked,
-            getCurrentAPY(),
-            getRewardPerSecondPerETH(),
-            rewardToken.balanceOf(address(this))
-        );
+    function getPoolInfo()
+        public
+        view
+        returns (uint256 currentTVL, uint256 currentAPY, uint256 rewardRate, uint256 contractBalance)
+    {
+        return (totalStaked, getCurrentAPY(), getRewardPerSecondPerETH(), rewardToken.balanceOf(address(this)));
     }
-
-
-
-
 
     function getMyPendingRewards() public view returns (uint256) {
         return calcReward(msg.sender);
     }
 
-
-
-
-
     function getMyStake() public view returns (uint256 amount, uint256 startTime, uint256 pendingReward) {
         Stake memory userStake = stakes[msg.sender];
-        return (
-            userStake.amount,
-            userStake.startTime,
-            calcReward(msg.sender)
-        );
+        return (userStake.amount, userStake.startTime, calcReward(msg.sender));
     }
-
-
-
-
 
     receive() external payable {
         stake();
@@ -249,38 +191,22 @@ contract LiquidityStaking is ReentrancyGuard, Ownable {
         stake();
     }
 
-
-
-
-
     function setTargetTvl(uint256 _targetTvl) external onlyOwner {
         require(_targetTvl > 0, ZeroAmount());
         targetTvl = _targetTvl;
         emit APYUpdated(getCurrentAPY(), totalStaked, block.timestamp);
     }
 
-
-
-
-
     function setBaseRewardRate(uint256 _baseRate) external onlyOwner {
         require(_baseRate > 0 && _baseRate <= 1000, InvalidRewardRate());
         baseRewardRatePerYear = _baseRate;
-        emit APYUpdated(getCurrentAPY(), totalStaked, block.timestamp);        
+        emit APYUpdated(getCurrentAPY(), totalStaked, block.timestamp);
     }
 
-
-
-
-
-    function setRateLimits(
-        uint256 _minRate,
-        uint256 _maxRate
-    ) external onlyOwner {
+    function setRateLimits(uint256 _minRate, uint256 _maxRate) external onlyOwner {
         require(_minRate > 0 && _minRate < _maxRate, InvalidLimits());
         minRewardRate = _minRate;
         maxRewardRate = _maxRate;
         emit APYUpdated(getCurrentAPY(), totalStaked, block.timestamp);
     }
-
 }
