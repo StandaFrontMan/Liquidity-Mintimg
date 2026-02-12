@@ -1,14 +1,11 @@
+import { useConnection } from "wagmi";
 import "./App.css";
-import { Button } from "./components/ui/button";
+import { Connection, WalletOptions } from "./features";
 
 function App() {
-  return (
-    <>
-      <div className="text-red-400">
-        <Button>asdasd</Button>
-      </div>
-    </>
-  );
+  const { isConnected } = useConnection();
+  if (isConnected) return <Connection />;
+  return <WalletOptions />;
 }
 
 export default App;

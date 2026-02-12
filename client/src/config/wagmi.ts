@@ -8,8 +8,8 @@ export const config = createConfig({
   connectors: [metaMask(), injected()],
   storage: createStorage({ storage: window.localStorage }),
   transports: {
-    [hardhat.id]: http("http://127.0.0.1:8545"), // Anvil
-    [sepolia.id]: http(), // Sepolia
+    [hardhat.id]: http(),
+    [sepolia.id]: http(),
   },
 });
 
