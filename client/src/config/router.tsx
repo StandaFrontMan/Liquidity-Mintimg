@@ -1,8 +1,14 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { useConnection } from "wagmi";
 import { ROUTES } from "./routes";
-import { Analytics, Calculator, Charts, Owner, Stake } from "@/pages";
 import { OwnerRoute } from "@/pages/owner/config";
+import { lazy } from "react";
+
+const Stake = lazy(() => import("@/pages/stake/index"));
+const Analytics = lazy(() => import("@/pages/analytics/index"));
+const Charts = lazy(() => import("@/pages/charts/index"));
+const Calculator = lazy(() => import("@/pages/calculator/index"));
+const Owner = lazy(() => import("@/pages/owner/index"));
 
 function ProtectedRoute() {
   const { isConnected } = useConnection();

@@ -1,7 +1,7 @@
 import { Connection, WalletOptions } from "@/features";
 import { useConnection } from "wagmi";
 
-export function Stake() {
+export default function Stake() {
   const { isConnected } = useConnection();
 
   return (
