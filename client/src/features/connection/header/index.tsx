@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { NetworkBadge } from "@/entities";
 import { shortAddress } from "@/lib/utils";
 import { useChainId, useConnection, useDisconnect } from "wagmi";
@@ -31,12 +32,12 @@ export function ConnectionHeader() {
             </span>
           </div>
 
-          <button
+          <Button
             onClick={() => disconnect()}
             className="px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-500 border border-zinc-700 hover:border-red-500/40 hover:text-red-400 transition-colors duration-150"
           >
             Disconnect
-          </button>
+          </Button>
         </div>
       </div>
     </div>
