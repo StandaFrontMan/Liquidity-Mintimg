@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useConnect, useConnection, useConnectors, useDisconnect } from "wagmi";
 
 import {
@@ -12,6 +12,7 @@ import {
 import { WalletOption } from "../wallet-options/ui/wallet-option";
 import { Fragment } from "react/jsx-runtime";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/config/routes";
 
 export function Header() {
   const location = useLocation();
@@ -21,36 +22,36 @@ export function Header() {
   const connectors = useConnectors();
   const { disconnect } = useDisconnect();
 
-  const navItems = [
-    { path: "/", label: "Stake", icon: Home },
-    { path: "/charts", label: "Charts", icon: LineChart },
-    { path: "/analytics", label: "Analytics", icon: Activity },
-    { path: "/calculator", label: "Calculator", icon: Calculator },
-    { path: "/leaderboard", label: "Leaderboard", icon: Trophy },
-    { path: "/owner", label: "Admin", icon: Settings, ownerOnly: true },
+  const NAV_ITEMS = [
+    { path: ROUTES.STAKE, label: "Stake", icon: Home },
+    { path: ROUTES.CHARTS, label: "Charts", icon: LineChart },
+    { path: ROUTES.ANALYTICS, label: "Analytics", icon: Activity },
+    { path: ROUTES.CALCULATOR, label: "Calculator", icon: Calculator },
+    { path: ROUTES.LEADERBOARD, label: "Leaderboard", icon: Trophy },
+    { path: ROUTES.ADMIN, label: "Admin", icon: Settings },
   ];
 
   return (
     <header className="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-xl sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2">
+          <NavLink to={ROUTES.STAKE} className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">Ξ</span>
             </div>
             <span className="font-bold text-xl hidden sm:block">
               LiquidStake
             </span>
-          </Link>
+          </NavLink>
 
           {isConnected && (
             <nav className="flex items-center gap-1 sm:gap-2">
-              {navItems.map((item) => {
+              {NAV_ITEMS.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
 
                 return (
-                  <Link
+                  <NavLink
                     key={item.path}
                     to={item.path}
                     className={`
@@ -64,7 +65,7 @@ export function Header() {
                   >
                     <Icon className="w-4 h-4" />
                     <span className="hidden sm:block">{item.label}</span>
-                  </Link>
+                  </NavLink>
                 );
               })}
             </nav>
