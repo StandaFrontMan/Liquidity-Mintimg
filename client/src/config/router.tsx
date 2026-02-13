@@ -1,7 +1,8 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { useConnection } from "wagmi";
 import { ROUTES } from "./routes";
-import { Stake } from "@/pages";
+import { Analytics, Calculator, Charts, Owner, Stake } from "@/pages";
+import { OwnerRoute } from "@/pages/owner/config";
 
 function ProtectedRoute() {
   const { isConnected } = useConnection();
@@ -20,10 +21,17 @@ export function AppRouter() {
       <Route path={ROUTES.STAKE} element={<Stake />} />
 
       <Route element={<ProtectedRoute />}>
-        <Route path={ROUTES.PORTFOLIO} element={<>asdasd</>} />
-        <Route path={ROUTES.ANALYTICS} element={<>asdasd</>} />
-        <Route path={ROUTES.LEADERBOARD} element={<>asdasd</>} />
+        <Route path={ROUTES.ANALYTICS} element={<Analytics />} />
+
+        <Route path={ROUTES.CALCULATOR} element={<Calculator />} />
+
+        <Route path={ROUTES.CHARTS} element={<Charts />} />
+
+        <Route element={<OwnerRoute />}>
+          <Route path={ROUTES.ADMIN} element={<Owner />} />
+        </Route>
       </Route>
+
       {/* <Route
         path="/portfolio"
         element={
