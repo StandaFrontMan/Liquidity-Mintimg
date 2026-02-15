@@ -1,6 +1,6 @@
 import { LIQIUDITY_STAKING_ABI } from "@/config/abis";
 import { CONTRACT_ADDRESSES, type SupportedChainId } from "@/config/addresses";
-import { APYCurve } from "@/features";
+import { APYCurve, EventFeed, type APYEvent } from "@/features";
 import { fmtEth, fmtTokens } from "@/lib/utils";
 import { Section, StatRow } from "@/shared";
 import { useState } from "react";
@@ -10,12 +10,6 @@ import {
   useReadContract,
   useWatchContractEvent,
 } from "wagmi";
-
-interface APYEvent {
-  apy: bigint;
-  totalStaked: bigint;
-  timestamp: bigint;
-}
 
 export default function Analytics() {
   const chainId = useChainId();
@@ -46,7 +40,7 @@ export default function Analytics() {
     abi: LIQIUDITY_STAKING_ABI,
     eventName: "APYUpdated",
     onLogs(logs) {
-      const incoming: APYEvent[] = logs.map((log: any) => ({
+      const incoming: APYEvent[] = logs.map((log) => ({
         apy: log.args.curApy as bigint,
         totalStaked: log.args.totalStaked as bigint,
         timestamp: log.args.timeStamp as bigint,
@@ -82,7 +76,6 @@ export default function Analytics() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-bold text-zinc-100 tracking-tight">
@@ -98,7 +91,12 @@ export default function Analytics() {
         </div>
       </div>
 
-      {/* Row 1: Pool Metrics + Reward Rates */}
+      <Section
+        title={`Live APY Events${apyEvents.length > 0 ? ` · ${apyEvents.length}` : ""}`}
+      >
+        <EventFeed />
+      </Section>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Section title="Pool Metrics">
           <StatRow
@@ -163,12 +161,6 @@ export default function Analytics() {
       <Section title="APY vs TVL — Curve Simulation">
         <APYCurve contractAddress={address} currentTVL={tvl} />
       </Section>
-
-      {/* <Section
-        title={`Live APY Events${apyEvents.length > 0 ? ` · ${apyEvents.length}` : ""}`}
-      >
-        <EventFeed events={apyEvents} />
-      </Section> */}
     </div>
   );
 }

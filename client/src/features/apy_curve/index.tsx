@@ -2,6 +2,12 @@ import { LIQIUDITY_STAKING_ABI } from "@/config/abis";
 import { formatEther } from "viem";
 import { useReadContracts } from "wagmi";
 
+export interface APYEvent {
+  apy: bigint;
+  totalStaked: bigint;
+  timestamp: bigint;
+}
+
 export function APYCurve({
   contractAddress,
   currentTVL,
@@ -49,7 +55,7 @@ export function APYCurve({
       <div className="space-y-2">
         {points.map(({ eth, apy }) => {
           const currentEth = Number(formatEther(currentTVL));
-          const isCurrentTVL = Math.abs(eth - currentEth) < eth * 0.3; // ближайшая точка
+          const isCurrentTVL = Math.abs(eth - currentEth) < eth * 0.3;
 
           const pct = maxApy > 0 ? (apy / maxApy) * 100 : 0;
           const color =
