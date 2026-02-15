@@ -1,5 +1,6 @@
 import { LIQIUDITY_STAKING_ABI } from "@/config/abis";
 import { CONTRACT_ADDRESSES, type SupportedChainId } from "@/config/addresses";
+import { APYCurve } from "@/features";
 import { fmtEth, fmtTokens } from "@/lib/utils";
 import { Section, StatRow } from "@/shared";
 import { useState } from "react";
@@ -25,8 +26,14 @@ export default function Analytics() {
 
   const { data: blockNumber } = useBlockNumber({ watch: true });
 
+  /**
+   * @return currentTVL
+   * @return currentAPY
+   * @return rewardRate
+   * @return contractBalance
+   */
   const { data: pool, isLoading } = useReadContract({
-    address,
+    address: address,
     abi: LIQIUDITY_STAKING_ABI,
     functionName: "getPoolInfo",
     query: {
@@ -36,7 +43,6 @@ export default function Analytics() {
   });
 
   useWatchContractEvent({
-    address,
     abi: LIQIUDITY_STAKING_ABI,
     eventName: "APYUpdated",
     onLogs(logs) {
@@ -49,10 +55,10 @@ export default function Analytics() {
     },
   });
 
-  const tvl = pool?.currentTVL ?? 0n;
-  const apy = pool?.currentAPY ?? 0n;
-  const rewardRate = pool?.rewardRate ?? 0n;
-  const contractBalance = pool?.contractBalance ?? 0n;
+  const tvl = pool?.[0] ?? 0n;
+  const apy = pool?.[1] ?? 0n;
+  const rewardRate = pool?.[2] ?? 0n;
+  const contractBalance = pool?.[3] ?? 0n;
 
   // Расчёты
   const dailyPerEth =
@@ -153,6 +159,16 @@ export default function Analytics() {
           />
         </Section>
       </div>
+
+      <Section title="APY vs TVL — Curve Simulation">
+        <APYCurve contractAddress={address} currentTVL={tvl} />
+      </Section>
+
+      {/* <Section
+        title={`Live APY Events${apyEvents.length > 0 ? ` · ${apyEvents.length}` : ""}`}
+      >
+        <EventFeed events={apyEvents} />
+      </Section> */}
     </div>
   );
 }
