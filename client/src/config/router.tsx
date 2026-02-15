@@ -26,9 +26,9 @@ export function AppRouter() {
       <Route path={ROUTES.ROOT} element={<Navigate to={ROUTES.STAKE} />} />
       <Route path={ROUTES.STAKE} element={<Stake />} />
 
-      <Route element={<ProtectedRoute />}>
-        <Route path={ROUTES.ANALYTICS} element={<Analytics />} />
+      <Route path={ROUTES.ANALYTICS} element={<Analytics />} />
 
+      <Route element={<ProtectedRoute />}>
         <Route path={ROUTES.CALCULATOR} element={<Calculator />} />
 
         <Route path={ROUTES.CHARTS} element={<Charts />} />
