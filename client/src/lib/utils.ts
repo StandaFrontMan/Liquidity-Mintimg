@@ -1,3 +1,4 @@
+import { PRECISION, SECONDS_PER_YEAR } from "@/config/constats";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { formatEther } from "viem";
@@ -45,4 +46,25 @@ export function fmtTime(ts: bigint) {
 
 export function toEth(wei: bigint) {
   return parseFloat(parseFloat(formatEther(wei)).toFixed(4));
+}
+
+export function calcReward(
+  amountEth: number,
+  apy: number,
+  durationDays: number,
+): number {
+  // reward = amount * time * rate / PRECISION
+  // rate   = PRECISION * APY / (100 * SECONDS_PER_YEAR)
+  const rate = (PRECISION * apy) / (100 * SECONDS_PER_YEAR);
+  const durationSec = durationDays * 24 * 60 * 60;
+  const amountWei = amountEth * PRECISION;
+  const reward = (amountWei * durationSec * rate) / PRECISION / PRECISION;
+  return reward;
+}
+
+export function fmtReward(n: number): string {
+  if (n === 0) return "0";
+  if (n < 0.0001) return "<0.0001";
+  if (n < 1) return n.toFixed(4);
+  return n.toFixed(2);
 }
