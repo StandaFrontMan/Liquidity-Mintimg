@@ -42,3 +42,7 @@ export function fmtTime(ts: bigint) {
     second: "2-digit",
   });
 }
+
+export function toEth(wei: bigint) {
+  return parseFloat(parseFloat(formatEther(wei)).toFixed(4));
+}
