@@ -4,12 +4,12 @@ import { injected, metaMask } from "wagmi/connectors";
 import { anvilLocal } from "./chains";
 
 export const config = createConfig({
-  chains: [hardhat, sepolia, anvilLocal],
+  chains: [hardhat, sepolia],
   connectors: [metaMask(), injected()],
   storage: createStorage({ storage: window.localStorage }),
   transports: {
     [hardhat.id]: http(),
-    [sepolia.id]: http(),
+    [sepolia.id]: http(import.meta.env.VITE_SEPOLIA_RPC_URL),
   },
 });
 

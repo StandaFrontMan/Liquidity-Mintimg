@@ -88,8 +88,8 @@ export default function Charts() {
           ]);
 
         // ── TVL + APY
-        const tvlPoints: TVLPoint[] = apyLogs.map((log) => ({
-          time: fmtTime(log.args.timeStamp ?? 0n),
+        const tvlPoints: TVLPoint[] = apyLogs.map((log, i) => ({
+          time: `#${log.blockNumber?.toString() ?? i}`,
           tvl: toEth(log.args.totalStaked ?? 0n),
           apy: Number(log.args.curApy ?? 0n),
         }));
@@ -180,7 +180,6 @@ export default function Charts() {
         </p>
       </div>
 
-      {/* Row 1: TVL + APY */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ChartCard
           title="Total Value Locked"
@@ -250,7 +249,6 @@ export default function Charts() {
         </ChartCard>
       </div>
 
-      {/* Row 2: Volume + Rewards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ChartCard
           title="Staking Volume"

@@ -4,9 +4,10 @@ import {
   useReadContract,
   useWriteContract,
   useWaitForTransactionReceipt,
+  useChainId,
 } from "wagmi";
 import { LIQIUDITY_STAKING_ABI } from "@/config/abis";
-import { CONTRACT_ADDRESSES } from "@/config/addresses";
+import { CONTRACT_ADDRESSES, type SupportedChainId } from "@/config/addresses";
 import { PersanalStats } from "./persanal_stats";
 
 import { StakingActions } from "./staking_actions";
@@ -15,7 +16,11 @@ import { StakeInput } from "./stake_input";
 export function StakingPanel() {
   const { address } = useAccount();
 
-  const stakingAddress = CONTRACT_ADDRESSES[31337].LIQUIDITY_STAKING;
+  const chainId = useChainId();
+  const addresses = CONTRACT_ADDRESSES[chainId as SupportedChainId];
+  const stakingAddress = addresses?.LIQUIDITY_STAKING;
+
+  console.log(chainId, "asdasd");
 
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
 
