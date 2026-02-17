@@ -3,8 +3,8 @@ import { useConnection } from "wagmi";
 import { ROUTES } from "./routes";
 import { OwnerRoute } from "@/pages/owner/config";
 import { lazy } from "react";
+import Stake from "@/pages/stake";
 
-const Stake = lazy(() => import("@/pages/stake/index"));
 const Analytics = lazy(() => import("@/pages/analytics/index"));
 const Charts = lazy(() => import("@/pages/charts/index"));
 const Calculator = lazy(() => import("@/pages/calculator/index"));
