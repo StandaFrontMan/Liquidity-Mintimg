@@ -2,8 +2,9 @@
 
 A decentralized ETH staking protocol with **dynamic APY** that automatically adjusts based on Total Value Locked (TVL). Built with Solidity, Foundry, React, and Wagmi.
 
-🔗 **Live Demo:** [liquidity-staking.vercel.app](https://liquidity-mintimg-p1hj.vercel.app)  
-🔍 **Contracts (Sepolia):**  
+🔗 **Live Demo:** [liquidity-staking.vercel.app](https://liquidity-mintimg.vercel.app)  
+🔍 **Contracts (Sepolia):**
+
 - LiquidityStaking: [`0xcBF02fE979C96E0987f874FB1C5129057d1D976a`](https://sepolia.etherscan.io/address/0xcbf02fe979c96e0987f874fb1c5129057d1d976a)
 - RewardToken: [`0xe3D13615F6d5cC866713c0432bb71C4E12c01EfB`](https://sepolia.etherscan.io/address/0xe3d13615f6d5cc866713c0432bb71c4e12c01efb)
 
@@ -28,6 +29,7 @@ This creates natural supply/demand equilibrium without manual intervention.
 ## 🎯 Key Features
 
 ### Smart Contract
+
 - ✅ Dynamic APY based on TVL
 - ✅ No lock-up period — stake/unstake anytime
 - ✅ Claim rewards without unstaking
@@ -36,6 +38,7 @@ This creates natural supply/demand equilibrium without manual intervention.
 - ✅ Verified on Etherscan
 
 ### Frontend
+
 - 🎨 Five interactive pages: Stake, Analytics, Charts, Calculator, Admin
 - 📊 Real-time data from blockchain via Wagmi
 - 📈 Historical charts from on-chain events (TVL, APY, Volume, Rewards)
@@ -69,6 +72,7 @@ packages/
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - Foundry ([install](https://book.getfoundry.sh/getting-started/installation))
 - MetaMask with Sepolia testnet ETH
@@ -126,6 +130,7 @@ forge test --match-test testStakeAndUnstake -vvv
 **Limits:** 5% min, 100% max
 
 Example APY curve:
+
 ```
 25 ETH   →  80% APY   (low TVL → high incentive)
 50 ETH   →  40% APY
@@ -144,6 +149,7 @@ Example APY curve:
 ### Admin Controls
 
 Contract owner can adjust:
+
 - `setTargetTvl()` — Change target TVL
 - `setBaseRewardRate()` — Adjust base APY
 - `setRateLimits()` — Update min/max bounds
@@ -153,11 +159,13 @@ Contract owner can adjust:
 ## 🛠️ Tech Stack
 
 **Smart Contracts:**
+
 - Solidity 0.8.30
 - Foundry (forge, cast, anvil)
 - OpenZeppelin (Ownable, ReentrancyGuard)
 
 **Frontend:**
+
 - React 18 + TypeScript
 - Vite
 - Wagmi + Viem (Web3 interaction)
@@ -183,6 +191,7 @@ src/
 ```
 
 **Frontend Pages:**
+
 - `/stake` — Stake ETH, view pool stats, manage position
 - `/analytics` — Pool metrics, APY curve, live event feed
 - `/charts` — Historical TVL, APY, volume, rewards (from events)
@@ -194,6 +203,7 @@ src/
 ## 🔐 Security Considerations
 
 ✅ **Implemented:**
+
 - ReentrancyGuard on all state-changing functions
 - Ownable for admin functions
 - Comprehensive test coverage
@@ -215,6 +225,7 @@ MIT
 This is an educational project. Feel free to fork and experiment!
 
 **Ideas for improvement:**
+
 - Implement reward-per-token accumulator for fair reward distribution
 - Add governance token for decentralized parameter changes
 - Multi-asset staking support
@@ -225,6 +236,7 @@ This is an educational project. Feel free to fork and experiment!
 ## 📧 Contact
 
 Built as a learning project to explore:
+
 - DeFi protocol mechanics
 - Dynamic economic models
 - Full-stack Web3 development
