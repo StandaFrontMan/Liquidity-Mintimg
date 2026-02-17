@@ -1,16 +1,14 @@
 import { LIQIUDITY_STAKING_ABI } from "@/config/abis";
-import { CONTRACT_ADDRESSES } from "@/config/addresses";
+import { CONTRACT_ADDRESSES, type SupportedChainId } from "@/config/addresses";
 import { toast } from "sonner";
 import { formatEther } from "viem";
-import { useChainId, useWatchContractEvent, useConnection } from "wagmi";
+import { useChainId, useWatchContractEvent, useAccount } from "wagmi";
 
 export function Notifications() {
-  const { address } = useConnection();
+  const { address } = useAccount();
   const chainId = useChainId();
-
-  const stakingAddress =
-    CONTRACT_ADDRESSES[chainId as keyof typeof CONTRACT_ADDRESSES]
-      ?.LIQUIDITY_STAKING;
+  const addresses = CONTRACT_ADDRESSES[chainId as SupportedChainId];
+  const stakingAddress = addresses?.LIQUIDITY_STAKING;
 
   useWatchContractEvent({
     address: stakingAddress,

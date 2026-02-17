@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { parseEther, type ReadContractErrorType } from "viem";
-import { useWriteContract } from "wagmi";
+import { useChainId, useWriteContract } from "wagmi";
 import { LIQIUDITY_STAKING_ABI } from "@/config/abis";
-import { CONTRACT_ADDRESSES } from "@/config/addresses";
+import { CONTRACT_ADDRESSES, type SupportedChainId } from "@/config/addresses";
 import type {
   QueryObserverResult,
   RefetchOptions,
@@ -29,7 +29,9 @@ export function StakeInput({ refetchStake, txLoading, setTxHash }: Props) {
 
   const { writeContractAsync } = useWriteContract();
 
-  const stakingAddress = CONTRACT_ADDRESSES[31337].LIQUIDITY_STAKING;
+  const chainId = useChainId();
+  const addresses = CONTRACT_ADDRESSES[chainId as SupportedChainId];
+  const stakingAddress = addresses?.LIQUIDITY_STAKING;
 
   async function handleStake() {
     if (!amount || Number(amount) <= 0) return;

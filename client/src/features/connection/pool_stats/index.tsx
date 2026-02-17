@@ -1,12 +1,16 @@
 import { formatBalance, formatTVL } from "@/lib/utils";
-import { useReadContract } from "wagmi";
+import { useChainId, useReadContract } from "wagmi";
 import { StatCard } from "../stat_card";
 import { LIQIUDITY_STAKING_ABI } from "@/config/abis";
-import { CONTRACT_ADDRESSES } from "@/config/addresses";
+import { CONTRACT_ADDRESSES, type SupportedChainId } from "@/config/addresses";
 
 export function PoolStats() {
+  const chainId = useChainId();
+  const addresses = CONTRACT_ADDRESSES[chainId as SupportedChainId];
+  const stakingAddress = addresses?.LIQUIDITY_STAKING;
+
   const { data, isLoading } = useReadContract({
-    address: CONTRACT_ADDRESSES[31337].LIQUIDITY_STAKING,
+    address: stakingAddress,
     abi: LIQIUDITY_STAKING_ABI,
     functionName: "getPoolInfo",
     query: {

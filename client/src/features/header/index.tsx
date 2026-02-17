@@ -13,18 +13,17 @@ import { WalletOption } from "../wallet-options/ui/wallet-option";
 import { Fragment } from "react";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
-import { CONTRACT_ADDRESSES } from "@/config/addresses";
+import { CONTRACT_ADDRESSES, type SupportedChainId } from "@/config/addresses";
 import { LIQIUDITY_STAKING_ABI } from "@/config/abis";
 
 export function Header() {
   const location = useLocation();
   const { isConnected } = useConnection();
   const { address } = useConnection();
-  const chainId = useChainId();
 
-  const stakingAddress =
-    CONTRACT_ADDRESSES[chainId as keyof typeof CONTRACT_ADDRESSES]
-      ?.LIQUIDITY_STAKING;
+  const chainId = useChainId();
+  const addresses = CONTRACT_ADDRESSES[chainId as SupportedChainId];
+  const stakingAddress = addresses?.LIQUIDITY_STAKING;
 
   const { data: contractOwner } = useReadContract({
     address: stakingAddress,

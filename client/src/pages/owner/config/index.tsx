@@ -1,16 +1,14 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAccount, useReadContract, useChainId } from "wagmi";
-import { CONTRACT_ADDRESSES } from "@/config/addresses";
+import { CONTRACT_ADDRESSES, type SupportedChainId } from "@/config/addresses";
 import { LIQIUDITY_STAKING_ABI } from "@/config/abis";
 import { ROUTES } from "@/config/routes";
 
 export function OwnerRoute() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-
-  const stakingAddress =
-    CONTRACT_ADDRESSES[chainId as keyof typeof CONTRACT_ADDRESSES]
-      ?.LIQUIDITY_STAKING;
+  const addresses = CONTRACT_ADDRESSES[chainId as SupportedChainId];
+  const stakingAddress = addresses?.LIQUIDITY_STAKING;
 
   const { data: contractOwner, isLoading } = useReadContract({
     address: stakingAddress,
