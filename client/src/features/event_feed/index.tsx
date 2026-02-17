@@ -9,20 +9,20 @@ import { CONTRACT_ADDRESSES, type SupportedChainId } from "@/config/addresses";
 export function EventFeed() {
   const chainId = useChainId();
   const addresses = CONTRACT_ADDRESSES[chainId as SupportedChainId];
-  const address = addresses?.LIQUIDITY_STAKING;
+  const stakingAddress = addresses?.LIQUIDITY_STAKING;
 
   const client = usePublicClient();
   const [events, setEvents] = useState<APYEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!client || !address) return;
+    if (!client || !stakingAddress) return;
 
     setLoading(true);
 
     client
       .getLogs({
-        address: address,
+        address: stakingAddress,
         event: parseAbiItem(
           "event APYUpdated(uint256 curApy, uint256 totalStaked, uint256 timeStamp)",
         ),
@@ -38,10 +38,10 @@ export function EventFeed() {
         setEvents(historical);
       })
       .finally(() => setLoading(false));
-  }, [client, address]);
+  }, [client, stakingAddress]);
 
   useWatchContractEvent({
-    address: address,
+    address: stakingAddress,
     abi: LIQIUDITY_STAKING_ABI,
     eventName: "APYUpdated",
     onLogs(logs) {

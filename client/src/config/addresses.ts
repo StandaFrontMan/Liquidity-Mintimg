@@ -9,8 +9,8 @@ export const CONTRACT_ADDRESSES = {
   },
   // Sepolia testnet — заполнить после деплоя
   11155111: {
-    LIQUIDITY_STAKING: "" as `0x${string}`,
-    REWARD_TOKEN: "" as `0x${string}`,
+    LIQUIDITY_STAKING: "0xcBF02fE979C96E0987f874FB1C5129057d1D976a", // ✅
+    REWARD_TOKEN: "0xe3D13615F6d5cC866713c0432bb71C4E12c01EfB", // ✅
   },
 } as const;
 

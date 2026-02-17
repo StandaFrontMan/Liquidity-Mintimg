@@ -14,7 +14,7 @@ import {
 export default function Analytics() {
   const chainId = useChainId();
   const addresses = CONTRACT_ADDRESSES[chainId as SupportedChainId];
-  const address = addresses?.LIQUIDITY_STAKING;
+  const stakingAddress = addresses?.LIQUIDITY_STAKING;
 
   const [apyEvents, setApyEvents] = useState<APYEvent[]>([]);
 
@@ -27,11 +27,11 @@ export default function Analytics() {
    * @return contractBalance
    */
   const { data: pool, isLoading } = useReadContract({
-    address: address,
+    address: stakingAddress,
     abi: LIQIUDITY_STAKING_ABI,
     functionName: "getPoolInfo",
     query: {
-      enabled: !!address,
+      enabled: !!stakingAddress,
       refetchInterval: 5_000,
     },
   });
@@ -66,7 +66,7 @@ export default function Analytics() {
   const utilization =
     tvl > 0n ? Math.min(100, Math.round((Number(fmtEth(tvl)) / 100) * 100)) : 0;
 
-  if (!address) {
+  if (!stakingAddress) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <p className="text-zinc-600 text-sm font-mono">Unsupported network</p>
@@ -159,7 +159,7 @@ export default function Analytics() {
       </div>
 
       <Section title="APY vs TVL — Curve Simulation">
-        <APYCurve contractAddress={address} currentTVL={tvl} />
+        <APYCurve contractAddress={stakingAddress} currentTVL={tvl} />
       </Section>
     </div>
   );
