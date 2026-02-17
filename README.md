@@ -243,4 +243,4 @@ Built as a learning project to explore:
 - Foundry testing patterns
 - React + Wagmi integration
 
-Questions? Open an issue or reach out on [LinkedIn](https://linkedin.com/in/yourprofile).
+Questions? Open an issue or reach out on [LinkedIn](https://www.linkedin.com/in/stanislav-vinogradov-b0ba6125a).
