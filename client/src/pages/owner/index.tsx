@@ -198,7 +198,8 @@ export default function Owner() {
                 ? "Invalid limits (min must be < max)"
                 : error.message.includes("ZeroAmount")
                   ? "Value cannot be zero"
-                  : (error.shortMessage ?? error.message)}
+                  : // @ts-expect-error shortMessage is not in all error union types
+                    (error.shortMessage ?? error.message)}
           </p>
         </div>
       )}

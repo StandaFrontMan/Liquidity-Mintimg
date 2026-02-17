@@ -1,7 +1,6 @@
 import { createConfig, createStorage, http } from "wagmi";
 import { sepolia, hardhat } from "wagmi/chains";
 import { injected, metaMask } from "wagmi/connectors";
-import { anvilLocal } from "./chains";
 
 export const config = createConfig({
   chains: [hardhat, sepolia],

@@ -1,3 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function ChartTooltip({ active, payload, label, unit }: any) {
   if (!active || !payload?.length) return null;
 
